@@ -1,5 +1,3 @@
-var rntas = 1;
-
 var n;
 
 var message;
@@ -16,19 +14,18 @@ var commentId;
 
 var commentUser;
 
+var splitCommand;
+
 var topCommentId = 0;
 
-var append = " | This message was performed automatically. If the bot is malfunctioning, please stop the bot by posting '/bot-stop' and contact @DogCatPuppyLover. RNTAS: "
+var append = " | This message was performed automatically. If the bot is malfunctioning, please stop the bot by posting '/eeg stop' and contact @DogCatPuppyLover. RNTAS: "
 
-function send(message, commentUser, append, rntas, commentId, studio_id, n) {
+function send(message, commentUser, append, commentId, studio_id, n) {
   $.getJSON("https://api.scratch.mit.edu/users/" + commentUser, function(data) {
     message = "Welcome! If you haven't already been invited, you'll be invited soon."; //set message
     if (commentId > topCommentId) { //prevent spam
-      console.log(message + append + rntas, commentId, data.id, studio_id);
-      postComment(message + append + rntas, commentId, data.id, studio_id); //welcome curator
-      if (n == 0) {
-        topCommentId = commentId;
-      }
+      console.log(message + append + commentId, commentId, data.id, studio_id);
+      postComment(message + append + commentId, commentId, data.id, studio_id); //welcome curator
     }
   });
 }
@@ -61,21 +58,30 @@ function bot(studio_id) {
       doc = domparser.parseFromString(data, "text/html");
       for (n = 0; n < doc.getElementsByClassName("top-level-reply").length; n++) { //check every comment on the first page
         topLevel = doc.getElementsByClassName("top-level-reply")[n]; //nth top-level comment
-        checkComment = topLevel.getElementsByClassName("content")[0].innerHTML.toLowerCase();
+        checkComment = topLevel.getElementsByClassName("content")[0].innerHTML.toLowerCase().trim();
         commentId = topLevel.getElementsByTagName("div")[0].getAttribute("data-comment-id");
         commentUser = topLevel.getElementsByTagName("a")[1].innerHTML;
+        splitCommand = checkComment.split(" ");
         console.log(checkComment + ", " + commentId + ", " + commentUser);
-        if (checkComment.includes("/bot-stop")) { //stop command
-          setTimeout(send("Stopping bot.", commentUser, append, rntas, commentId, studio_id, n), 2000);
-          clearInterval(bot)
-        } else if (checkComment.includes("invite") || checkComment.includes("join") || checkComment.includes("curat")) { //invite curator
-          setTimeout(send("Welcome! If you haven't already been invited, you'll be invited soon.", commentUser, append, rntas, commentId, studio_id, n), 2000);
-          inviteCurator(commentUser, studio_id); //invite curators
+        if (splitCommand[0] === "/eeg") {
+          if (splitCommand[1] === "stop") { //stop command
+            setTimeout(send("Stopping bot.", commentUser, append, commentId, commentId, studio_id, n), 2000);
+            clearInterval(bot)
+          } else if (splitCommand[1] === "invite") { //invite curator
+            setTimeout(send("Welcome! If you haven't already been invited, you'll be invited soon.", commentUser, append, commentId, studio_id, n), 2000);
+            inviteCurator(commentUser, studio_id); //invite curators
+          } else {
+            setTimeout(send("Sorry, '" + splitCommand[1] + "' is not a command.", commentUser, append, commentId, studio_id, n), 2000);
+          }
         }
-        rntas++;
+        if (n == 0) {
+          topCommentId = commentId;
+        }
       }
     }
   });
 }
 
-setInterval(function(){bot("5842709");}, 300000); //run the script every 10 minutes
+setInterval(function() {
+  bot("5842709");
+}, 300000); //run the script every 10 minutes
