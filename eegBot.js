@@ -18,13 +18,14 @@ var splitCommand;
 
 var topCommentId = 0;
 
-var append = " | RNTAS: "
+var pastTopCommentId = 0;
+
+var append = " | This message was sent automatically by @EegBot. RNTAS: "
 
 function send(message, commentUser, commentId, studio_id, n) {
   $.getJSON("https://api.scratch.mit.edu/users/" + commentUser, function(data) {
-    message = "Welcome! If you haven't already been invited, you'll be invited soon."; //set message
     console.log(message + append + commentId, commentId, data.id, studio_id);
-    postComment(message + append + commentId, commentId, data.id, studio_id); //welcome curator
+    postComment(message + append + commentId, commentId, data.id, studio_id);
   });
 }
 
@@ -40,6 +41,15 @@ function postComment(content, parent_id, commentee_id, studio_id) {
   });
 }
 
+function reportComment(comment_id, studio_id) {
+  $.ajax({
+          type: "POST",
+          url: "https://scratch.mit.edu/site-api/comments/gallery/" + studio_id + "/rep/",
+          data: JSON.stringify({"id":comment_id})
+
+});
+}
+
 function inviteCurator(username, studio_id) {
   $.ajax({
     type: "PUT",
@@ -48,6 +58,7 @@ function inviteCurator(username, studio_id) {
 }
 
 function bot(studio_id) {
+  pastTopCommentId = topCommentId;
   console.log("Running bot");
   $.ajax({
     url: "https://scratch.mit.edu/site-api/comments/gallery/" + studio_id,
@@ -60,8 +71,8 @@ function bot(studio_id) {
         commentId = topLevel.getElementsByTagName("div")[0].getAttribute("data-comment-id");
         commentUser = topLevel.getElementsByTagName("a")[1].innerHTML;
         splitCommand = checkComment.split(" ");
-        console.log(checkComment + ", " + commentId + ", " + commentUser);
-        if (commentId > topCommentId) {
+        console.log(checkComment + ", " + splitCommand + ", " + commentId + ", " + commentUser + ", " + n);
+        if (commentId > pastTopCommentId) {
           if (splitCommand[0] === "/eeg") {
             if (splitCommand[1] === "stop") {
               setTimeout(send("Stopping bot.", commentUser, commentId, commentId, studio_id, n), 2000);
@@ -77,6 +88,7 @@ function bot(studio_id) {
           }
           if (checkComment.includes("[delete]") || checkComment.includes("[remove]") || checkComment.includes("(delete)") || checkComment.includes("(remove)")) {
               setTimeout(send("Please don't try to bypass the filterbot or send links to websites with unmoderated chat.", commentUser, commentId, studio_id, n), 2000);
+              reportComment(commentId, studio_id)
           }
         }
         if (n == 0) {
