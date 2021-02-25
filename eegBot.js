@@ -101,7 +101,7 @@ function bot(studio_id) {
               changeTitle(titlePrefix + "Positivity hour! <333", studio_id)
               setTimeout(send("Of course! <333", commentUser, commentId, studio_id, n), 2000);
             } else if (splitCommand[1] === "tonetags") {
-              setTimeout(send("https://tonetags.carrd.co/#masterlist", commentUser, commentId, studio_id, n), 2000);
+              setTimeout(send("https://scratch.mit.edu/studios/28577246/comments/", commentUser, commentId, studio_id, n), 2000);
             }
             else {
               setTimeout(send("Whoops! '" + splitCommand[1] + "' is not a command. Go here for a list of commands: https://scratch.mit.edu/studios/28961456/comments/", commentUser, commentId, studio_id, n), 2000);
