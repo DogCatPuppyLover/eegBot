@@ -1,5 +1,7 @@
 var n;
 
+var titlePrefix = "♥️ LGBTQ+ ♥️ ";
+
 var message;
 
 var domparser;
@@ -43,11 +45,24 @@ function postComment(content, parent_id, commentee_id, studio_id) {
 
 function reportComment(comment_id, studio_id) {
   $.ajax({
-          type: "POST",
-          url: "https://scratch.mit.edu/site-api/comments/gallery/" + studio_id + "/rep/",
-          data: JSON.stringify({"id":comment_id})
+    type: "POST",
+    url: "https://scratch.mit.edu/site-api/comments/gallery/" + studio_id + "/rep/",
+    data: JSON.stringify({
+      "id": comment_id
+    })
 
-});
+  });
+}
+
+function changeTitle(title, studio_id) {
+  $.ajax({
+    type: "PUT",
+    url: "https://scratch.mit.edu/site-api/galleries/all/" + studio_id,
+    data: JSON.stringify({
+      "title": title
+    })
+
+  });
 }
 
 function inviteCurator(username, studio_id) {
@@ -82,13 +97,19 @@ function bot(studio_id) {
               inviteCurator(commentUser, studio_id)
             } else if (splitCommand[1] === "huggles") {
               setTimeout(send("*huggles*", commentUser, commentId, studio_id, n), 2000);
-            } else {
-              setTimeout(send("Whoops! '" + splitCommand[1] + "' is not a command.", commentUser, commentId, studio_id, n), 2000);
+            } else if (splitCommand[1] === "positivity") {
+              changeTitle(titlePrefix + "Positivity hour! <333", studio_id)
+              setTimeout(send("Of course! <333", commentUser, commentId, studio_id, n), 2000);
+            } else if (splitCommand[1] === "tonetags") {
+              setTimeout(send("https://tonetags.carrd.co/#masterlist", commentUser, commentId, studio_id, n), 2000);
+            }
+            else {
+              setTimeout(send("Whoops! '" + splitCommand[1] + "' is not a command. Go here for a list of commands: https://scratch.mit.edu/studios/28961456/comments/", commentUser, commentId, studio_id, n), 2000);
             }
           }
           if (checkComment.includes("[delete]") || checkComment.includes("[remove]") || checkComment.includes("(delete)") || checkComment.includes("(remove)")) {
-              setTimeout(send("Please don't try to bypass the filterbot or send links to websites with unmoderated chat.", commentUser, commentId, studio_id, n), 2000);
-              reportComment(commentId, studio_id)
+            setTimeout(send("Please don't try to bypass the filterbot or send links to websites with unmoderated chat.", commentUser, commentId, studio_id, n), 2000);
+            reportComment(commentId, studio_id)
           }
         }
         if (n == 0) {
