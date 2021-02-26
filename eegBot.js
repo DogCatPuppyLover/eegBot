@@ -95,6 +95,8 @@ function bot(studio_id) {
             } else if (splitCommand[1] === "invite") {
               setTimeout(send("Welcome to chaos! If you haven't already been invited, you'll be invited soon.", commentUser, commentId, studio_id, n), 2000);
               inviteCurator(commentUser, studio_id)
+            } else if (splitCommand[1] === "huggles") {
+              setTimeout(send("*huggles*", commentUser, commentId, studio_id, n), 2000);
             } else if (splitCommand[1] === "tonetags") {
               setTimeout(send("https://scratch.mit.edu/studios/28577246/comments/", commentUser, commentId, studio_id, n), 2000);
             }
