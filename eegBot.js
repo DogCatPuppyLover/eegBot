@@ -98,7 +98,7 @@ function bot(studio_id) {
             } else if (splitCommand[1] === "huggles") {
               setTimeout(send("*huggles*", commentUser, commentId, studio_id, n), 2000);
             } else if (splitCommand[1] === "tonetags") {
-              setTimeout(send("https://scratch.mit.edu/studios/28577246/comments/", commentUser, commentId, studio_id, n), 2000);
+              setTimeout(send("Here's a list of tone tags: https://scratch.mit.edu/studios/28577246/comments/", commentUser, commentId, studio_id, n), 2000);
             }
             else {
               setTimeout(send("Whoops! '" + splitCommand[1] + "' is not a command. Go here for a list of commands: https://scratch.mit.edu/studios/28961456/comments/", commentUser, commentId, studio_id, n), 2000);
